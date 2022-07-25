@@ -18,21 +18,35 @@ module.exports = (sequelize, DataTypes) => {
     {
       firstName: {
         type: DataTypes.STRING,
-        allowNull: false,
         validate: {
           notEmpty: {
             args: true,
-            msg: 'First Name is Required',
+            msg: 'Required First Name',
+          },
+          is: {
+            args: ['^[a-z]+$', 'i'],
+            msg: 'Only letters allowed',
+          },
+          len: {
+            args: [2, 20],
+            msg: 'Minimum 2 and Maximum 20 characters required in firstName',
           },
         },
       },
       lastName: {
         type: DataTypes.STRING,
-        allowNull: false,
         validate: {
           notEmpty: {
             args: true,
-            msg: 'Last Name is Required',
+            msg: 'Required Last Name',
+          },
+          is: {
+            args: ['^[a-z]+$', 'i'],
+            msg: 'Only letters allowed',
+          },
+          len: {
+            args: [2, 20],
+            msg: 'Minimum 2 and Maximum 20 characters required in lastName',
           },
         },
       },
@@ -59,6 +73,14 @@ module.exports = (sequelize, DataTypes) => {
             args: true,
             msg: 'Street Address is Required',
           },
+          is: {
+            args: [/^[a-zA-Z0-9 ]*$/],
+            msg: 'Only letters allowed',
+          },
+          len: {
+            args: [5, 40],
+            msg: 'Minimum 5 and Maximum 40 characters required streetAddress',
+          },
         },
       },
       city: {
@@ -68,6 +90,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: {
             args: true,
             msg: 'City is Required',
+          },
+          is: {
+            args: [/^[a-zA-Z0-9 ]*$/],
+            msg: 'Only letters allowed',
+          },
+          len: {
+            args: [2, 20],
+            msg: 'Minimum 2 and Maximum 20 characters required city',
           },
         },
       },
@@ -94,24 +124,53 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+          msg: 'Email must be unique',
+        },
         validate: {
+          notNull: {
+            msg: `Email is required`,
+          },
           notEmpty: {
-            args: true,
-            msg: 'E-mail is required',
+            msg: `Email is required`,
           },
           isEmail: {
-            args: true,
-            msg: 'Fill e-mail with true format',
+            msg: `invalid email format`,
+          },
+          isUnique: (value, next) => {
+            User.findAll({
+              where: { email: value },
+              attributes: ['id'],
+            })
+              .then((user) => {
+                if (user.length != 0) next(new Error('Email address already in use!'));
+                next();
+              })
+              .catch((err) => console.log(err));
           },
         },
       },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+          msg: 'username must be unique',
+        },
         validate: {
           notEmpty: {
             args: true,
             msg: 'Username is Required',
+          },
+          isUnique: (value, next) => {
+            User.findAll({
+              where: { username: value },
+              attributes: ['id'],
+            })
+              .then((user) => {
+                if (user.length != 0) next(new Error('Username already in use!'));
+                next();
+              })
+              .catch((err) => console.log(err));
           },
         },
       },
@@ -120,8 +179,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: {
-            args: true,
-            msg: 'Password is required',
+            msg: 'password required',
+          },
+          notNull: {
+            msg: 'password required',
+          },
+          len: {
+            args: 8,
+            msg: 'Password must be at least 8 characters',
           },
         },
       },

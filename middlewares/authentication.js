@@ -1,15 +1,18 @@
-"use strict";
+'use strict';
 
-const { readPayload } = require("../helper/jwt");
-const { User } = require("../models");
+const { readPayload } = require('../helper/jwt');
+const { User } = require('../models');
 
 const authentication = async (req, res, next) => {
   try {
-    const { access_token } = req.headers;
-    if (!access_token) {
-      throw { name: "invalid Token" };
-    }
-    const payloadUser = readPayload(access_token);
+    // const { access_token } = req.headers;
+    // if (!access_token) {
+    //   throw { name: 'invalid Token' };
+    // }
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    const payloadUser = readPayload(token);
     const { id } = payloadUser;
     const checkUser = await User.findByPk(id);
 
@@ -20,20 +23,20 @@ const authentication = async (req, res, next) => {
       };
     }
     if (!checkUser) {
-      throw { name: "Invalid Token" };
+      throw { name: 'Invalid Token' };
     }
     next();
   } catch (err) {
     const { name } = err;
-    if (name === "invalid Token" || name === "JsonWebTokenError") {
+    if (name === 'invalid Token' || name === 'JsonWebTokenError') {
       res.status(401).json({
-        status: "failed",
+        status: 'failed',
         code: 401,
-        message: "Access Token is Invalid",
+        message: 'Access Token is Invalid',
       });
     } else {
       res.status(500).json({
-        status: "Failed",
+        status: 'Failed',
         code: 500,
         message: err,
       });
