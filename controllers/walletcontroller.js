@@ -12,25 +12,16 @@ class WalletController {
       next(err);
     }
   }
-  static async wallet(req, res, next) {
-    try {
-      const body = req.body;
-      const { balance } = body;
-      const topupwallet = await Wallet.create({
-        balance: +balance,
-      });
-      res.status(201).json({
-        statusCode: 201,
-        data: topupwallet,
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
+
   static async topupwallet(req, res, next) {
     try {
-      const body = req.body;
-      const { balance } = body;
+      const { amount } = req.body;
+      const wallet = await Wallet.findOne({
+        where: {
+          id: +req.params.id,
+        },
+      });
+      let balance = amount + wallet.dataValues.balance;
       let data = { balance };
       const topupwallet = await Wallet.update(data, {
         where: {
@@ -49,6 +40,35 @@ class WalletController {
       next(err);
     }
   }
+
+  static async walletpay(req, res, next) {
+    try {
+      const { amount } = req.body;
+      const wallet = await Wallet.findOne({
+        where: {
+          id: +req.params.id,
+        },
+      });
+      let balance = wallet.dataValues.balance - amount;
+      let data = { balance };
+      const topupwallet = await Wallet.update(data, {
+        where: {
+          id: +req.params.id,
+        },
+      });
+      if (topupwallet[0] === 0) {
+        throw new Error('error not found');
+      }
+      res.status(201).json({
+        statusCode: 201,
+        message: 'This Successfully pay',
+        data: data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async balanceDetail(req, res, next) {
     try {
       const wallet = await Wallet.findOne({

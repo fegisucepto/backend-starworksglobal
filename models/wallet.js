@@ -9,11 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Wallet.belongsToMany(models.User, { through: 'User_Wallets' });
+      Wallet.belongsTo(models.User, { foreignKey: 'UserId' });
     }
   }
   Wallet.init(
     {
+      walletId: DataTypes.STRING,
       balance: DataTypes.INTEGER,
     },
     {

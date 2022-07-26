@@ -19,16 +19,12 @@ app.use((err, req, res, next) => {
     code = 400;
     message = err.errors[0].message;
   }
-  if (err.message === 'invalid image type') {
-    code = 400;
-    message = 'Invalid Image Type';
-  }
 
   if (err.message === 'User not found') {
     code = 401;
     message = 'Invalid username or password';
   }
-  
+
   res.status(code).json({ message });
 });
 
