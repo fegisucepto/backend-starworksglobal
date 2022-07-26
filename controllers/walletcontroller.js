@@ -51,12 +51,12 @@ class WalletController {
       });
       let balance = wallet.dataValues.balance - amount;
       let data = { balance };
-      const topupwallet = await Wallet.update(data, {
+      const walletpay = await Wallet.update(data, {
         where: {
           id: +req.params.id,
         },
       });
-      if (topupwallet[0] === 0) {
+      if (walletpay[0] === 0) {
         throw new Error('error not found');
       }
       res.status(201).json({

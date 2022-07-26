@@ -1,19 +1,13 @@
-const { User,Wallet } = require('../models');
+const { User, Wallet } = require('../models');
 const { hashPassword, verifyPassword } = require('../helper/index');
 const { addToken } = require('../helper/jwt');
-// // import sjcl from 'sjcl'
-// const jsSHA = require('jssha');
-// const jsSHA = require('jssha/sha1');
-// const jsSHA = require('jssha/dist/sha1');
-const sha256 = require('crypto-js/sha256');
-
-// const {sjcl} = require('sjcl')
+const { createHash } = require('crypto');
 
 class Controller {
   static async registrasi(req, res, next) {
     try {
       const { firstName, lastName, dateOfBirth, streetAddress, city, province, telephone, email, username, password } = req.body;
-        
+
       const createUser = await User.create({
         firstName,
         lastName,
@@ -26,19 +20,22 @@ class Controller {
         username,
         password,
       });
-      const walletId = (username + ':' + email);
-      const UserId = createUser.id
+      function hash(string) {
+        return createHash('sha256').update(string).digest('hex');
+      }
+      const walletAddress = hash(username + ':' + email);
+      const UserId = createUser.id;
       const hashcode = await Wallet.create({
-        walletId,
+        walletAddress,
         UserId,
-      })
+      });
       res.status(200).json({
         statusCode: 200,
         data: {
           id: createUser.id,
           username: createUser.username,
           email: createUser.email,
-          walletId: hashcode.walletId
+          walletAddress: hashcode.walletAddress,
         },
       });
     } catch (err) {
