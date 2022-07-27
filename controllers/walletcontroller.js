@@ -49,24 +49,15 @@ class WalletController {
           id: +req.params.id,
         },
       });
-      console.log(wallet.dataValues.balance , amount)
-      // let balance = wallet.dataValues.balance - amount;
-      // let data = { balance };
-      if (wallet.dataValues.balance < amount) {
-        throw new Error('saldo ni bos');
-        
-      } else {
-        let balance = wallet.dataValues.balance - amount;
-        console.log(balance)
-        let data = { balance };
-        const walletpay = await Wallet.update(data, {
-          where: {
-            id: +req.params.id,
-          },
-        });
-        if (walletpay[0] === 0) {
-          throw new Error('error not found');
-        }
+      let balance = wallet.dataValues.balance - amount;
+      let data = { balance };
+      const walletpay = await Wallet.update(data, {
+        where: {
+          id: +req.params.id,
+        },
+      });
+      if (walletpay[0] === 0) {
+        throw new Error('error not found');
       }
       res.status(201).json({
         statusCode: 201,
