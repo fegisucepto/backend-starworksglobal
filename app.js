@@ -28,7 +28,12 @@ app.use((err, req, res, next) => {
     message = 'Less balance, Please top up first';
   }
 
-  res.status(code).json({ message });
+  res.status(code).json({
+    statusCode: code,
+    error: {
+      message: message,
+    },
+  });
 });
 
 app.listen(port, () => {
