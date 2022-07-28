@@ -1,5 +1,5 @@
 const { User, Wallet } = require('../models');
-const { hashPassword, verifyPassword } = require('../helper/index');
+const { hashPassword, verifyPassword } = require('../helper/bcrypt');
 const { addToken } = require('../helper/jwt');
 const { createHash } = require('crypto');
 

@@ -49,16 +49,19 @@ class WalletController {
           id: +req.params.id,
         },
       });
-      let balance = wallet.dataValues.balance - amount;
+      let result = wallet.dataValues.balance;
+      let balance = result - amount;
       let data = { balance };
-      const walletpay = await Wallet.update(data, {
-        where: {
-          id: +req.params.id,
-        },
-      });
-      if (walletpay[0] === 0) {
-        throw new Error('error not found');
+      if (balance >= 0) {
+        Wallet.update(data, {
+          where: {
+            id: +req.params.id,
+          },
+        });
+      } else {
+        throw new Error('less balance');
       }
+
       res.status(201).json({
         statusCode: 201,
         message: 'This Successfully pay',

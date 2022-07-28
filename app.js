@@ -11,7 +11,6 @@ app.use(express.json());
 
 app.use('/', router);
 app.use((err, req, res, next) => {
-  // console.log(err);
   let code = 500;
   let message = 'Internal Server Error';
 
@@ -23,6 +22,10 @@ app.use((err, req, res, next) => {
   if (err.message === 'User not found') {
     code = 401;
     message = 'Invalid username or password';
+  }
+  if (err.message === 'less balance') {
+    code = 401;
+    message = 'Less balance, Please top up first';
   }
 
   res.status(code).json({ message });
