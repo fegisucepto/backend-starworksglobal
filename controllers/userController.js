@@ -3,7 +3,7 @@ const { hashPassword, verifyPassword } = require('../helper/bcrypt');
 const { addToken } = require('../helper/jwt');
 const { createHash } = require('crypto');
 
-class Controller {
+class UserController {
   static async registrasi(req, res, next) {
     try {
       const { firstName, lastName, dateOfBirth, streetAddress, city, province, telephone, email, username, password } = req.body;
@@ -76,4 +76,4 @@ class Controller {
   }
 }
 
-module.exports = Controller;
+module.exports = UserController;
